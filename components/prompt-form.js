@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import Message from "./message";
 
@@ -28,11 +29,10 @@ export default function PromptForm({
       <Message sender="replicate" isSameSender>
         <label htmlFor="prompt-input">
           {isFirstPrompt
-            ? "What should we change?"
-            : "What should we change now?"}
+            ? "What music should we generate?"
+            : "What music should we generate next?"}
         </label>
       </Message>
-
       <div className="flex mt-8">
         <input
           id="prompt-input"
@@ -40,19 +40,18 @@ export default function PromptForm({
           name="prompt"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Your message..."
+          placeholder="Describe the music you want to create..."
           className={`block w-full flex-grow${
             disabled ? " rounded-md" : " rounded-l-md"
           }`}
           disabled={disabled}
         />
-
         {disabled || (
           <button
             className="bg-black text-white rounded-r-md text-small inline-block p-3 flex-none"
             type="submit"
           >
-            Paint
+            Generate
           </button>
         )}
       </div>
