@@ -5,55 +5,40 @@ import { useEffect, useState } from "react";
 
 import Footer from "components/footer";
 
-import prepareImageFileForUpload from "lib/prepare-image-file-for-upload";
-import { getRandomSeed } from "lib/seeds";
-
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export const appName = "Paint by Text";
-export const appSubtitle = "Edit your photos using written instructions, with the help of an AI.";
-export const appMetaDescription = "Edit your photos using written instructions, with the help of an AI.";
+export const appName = "Music by Text";
+export const appSubtitle = "Generate music using written prompts, with the help of an AI.";
+export const appMetaDescription = "Generate music using written prompts, with the help of an AI.";
 
 export default function Home() {
   const [events, setEvents] = useState([]);
   const [predictions, setPredictions] = useState([]);
   const [error, setError] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [seed] = useState(getRandomSeed());
-  const [initialPrompt, setInitialPrompt] = useState(seed.prompt);
+  const [initialPrompt, setInitialPrompt] = useState("upbeat electronic dance music");
 
-  // set the initial image from a random seed
+  // Remove image-related initialization
   useEffect(() => {
-    setEvents([{ image: seed.image }]);
-  }, [seed.image]);
-
-  const handleImageDropped = async (image) => {
-    try {
-      image = await prepareImageFileForUpload(image);
-    } catch (error) {
-      setError(error.message);
-      return;
-    }
-    setEvents(events.concat([{ image }]));
-  };
+    setEvents([{ prompt: "Start generating music..." }]);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const prompt = e.target.prompt.value;
-    const lastImage = events.findLast((ev) => ev.image)?.image;
 
     setError(null);
     setIsProcessing(true);
     setInitialPrompt("");
 
-    // make a copy so that the second call to setEvents here doesn't blow away the first. Why?
+    // make a copy so that the second call to setEvents here doesn't blow away the first
     const myEvents = [...events, { prompt }];
     setEvents(myEvents);
 
     const body = {
       prompt,
-      input_image: lastImage,
+      duration: 8, // 8 seconds of music
     };
 
     const response = await fetch("/api/predictions", {
@@ -88,7 +73,7 @@ export default function Home() {
       if (prediction.status === "succeeded") {
         setEvents(
           myEvents.concat([
-            { image: prediction.output },
+            { audio: prediction.output }, // Changed from 'image' to 'audio'
           ])
         );
       }
@@ -99,10 +84,10 @@ export default function Home() {
 
   const startOver = async (e) => {
     e.preventDefault();
-    setEvents(events.slice(0, 1));
+    setEvents([{ prompt: "Start generating music..." }]);
     setError(null);
     setIsProcessing(false);
-    setInitialPrompt(seed.prompt);
+    setInitialPrompt("upbeat electronic dance music");
   };
 
   return (
@@ -148,7 +133,7 @@ export default function Home() {
         <Footer
           events={events}
           startOver={startOver}
-          handleImageDropped={handleImageDropped}
+          // Remove handleImageDropped since we don't need image upload
         />
       </main>
     </div>
