@@ -5,8 +5,6 @@ const replicate = new Replicate({
   userAgent: `${packageData.name}/${packageData.version}`
 });
 
-
-
 const API_HOST = process.env.REPLICATE_API_HOST || "https://api.replicate.com";
 
 import packageData from "../../../package.json";
@@ -24,13 +22,17 @@ export default async function handler(req, res) {
 
   let prediction
 
-  const model = "black-forest-labs/flux-kontext-pro"
+  // Changed from image model to your music model
+  const model = "lclrke/musicgen-ltb:latest"
   prediction = await replicate.predictions.create({
     model,
-    input: req.body
+    input: {
+      prompt: req.body.prompt,
+      duration: req.body.duration || 8, // Default to 8 seconds if not specified
+      // Add other parameters your model supports if needed
+    }
   });
   
-
   console.log({prediction});
 
   res.statusCode = 201;
