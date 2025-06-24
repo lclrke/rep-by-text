@@ -1,5 +1,4 @@
 import { RotateCcw as UndoIcon } from "lucide-react";
-import Image from "next/image";
 import { Fragment, useEffect, useRef } from "react";
 import PulseLoader from "react-spinners/PulseLoader";
 import Message from "./message";
@@ -16,22 +15,31 @@ export default function Messages({ events, isProcessing, onUndo }) {
   return (
     <section className="w-full">
       {events.map((ev, index) => {
-        if (ev.image) {
+        // Changed from ev.image to ev.audio
+        if (ev.audio) {
           return (
-            <Fragment key={"image-" + index}>
+            <Fragment key={"audio-" + index}>
               <Message sender="replicate" shouldFillWidth>
-                <Image
-                  alt={
-                    ev.prompt
-                      ? `The result of the prompt "${ev.prompt}" on the previous image`
-                      : "The source image"
-                  }
-                  width="512"
-                  height="512"
-                  priority={true}
-                  className="w-full h-auto rounded-lg"
-                  src={ev.image}
-                />
+                <div className="w-full">
+                  <audio 
+                    controls 
+                    className="w-full"
+                    src={ev.audio}
+                  >
+                    Your browser does not support the audio element.
+                  </audio>
+                  
+                  {/* Optional: Add download link */}
+                  <div className="mt-2 text-sm text-gray-600">
+                    <a 
+                      href={ev.audio} 
+                      download 
+                      className="text-blue-500 hover:text-blue-700 underline"
+                    >
+                      Download MP3
+                    </a>
+                  </div>
+                </div>
 
                 {onUndo && index > 0 && index === events.length - 1 && (
                   <div className="mt-2 text-right">
@@ -42,7 +50,7 @@ export default function Messages({ events, isProcessing, onUndo }) {
                       }}
                     >
                       <UndoIcon className="icon" /> Undo and try a different
-                      change
+                      prompt
                     </button>
                   </div>
                 )}
@@ -51,8 +59,8 @@ export default function Messages({ events, isProcessing, onUndo }) {
               {(isProcessing || index < events.length - 1) && (
                 <Message sender="replicate" isSameSender>
                   {index === 0
-                    ? "What should we change?"
-                    : "What should we change now?"}
+                    ? "What music should we generate?"
+                    : "What music should we generate now?"}
                 </Message>
               )}
             </Fragment>
